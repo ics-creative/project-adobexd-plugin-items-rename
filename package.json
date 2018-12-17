@@ -7,7 +7,7 @@
     "deploy": "xdpm install ./dist -o",
     "format": "prettier --write 'src/**/*.{js,ts,vue}'",
     "validate": "xdpm validate ./dist",
-    "package": "xdpm package ./dist && mv dist.xdx my-plugin.xdx"
+    "package": "xdpm package ./dist && mv dist.xdx bin/rename-items.xdx"
   },
   "devDependencies": {
     "@adobe/xdpm": "^1.1.2",
