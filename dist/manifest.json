@@ -1,6 +1,6 @@
 {
-    "id": "pluginkit-vue-typescript",
-    "name": "PluginKit Vue with TypeScript",
+    "id": "adobexd-plugin-items-rename",
+    "name": "Plugin Items Rename",
     "version": "1.0.0",
     "host": {
         "app": "XD",
@@ -9,7 +9,7 @@
     "uiEntryPoints": [
         {
             "type": "menu",
-            "label": "PluginKit Vue with TypeScript",
+            "label": "Items Rename",
             "commandId": "menuCommand"
         }
     ]

@@ -1194,7 +1194,7 @@ function listToStyles (parentId, list) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function(global, setImmediate) {/*!
- * Vue.js v2.5.20
+ * Vue.js v2.5.21
  * (c) 2014-2018 Evan You
  * Released under the MIT License.
  */
@@ -4085,7 +4085,7 @@ function mountComponent (
   // component's mounted hook), which relies on vm._watcher being already defined
   new Watcher(vm, updateComponent, noop, {
     before: function before () {
-      if (vm._isMounted) {
+      if (vm._isMounted && !vm._isDestroyed) {
         callHook(vm, 'beforeUpdate');
       }
     }
@@ -5022,9 +5022,10 @@ function renderList (
       ret[i] = render(val[key], key, i);
     }
   }
-  if (isDef(ret)) {
-    (ret)._isVList = true;
+  if (!isDef(ret)) {
+    ret = [];
   }
+  (ret)._isVList = true;
   return ret
 }
 
@@ -6361,7 +6362,7 @@ Object.defineProperty(Vue, 'FunctionalRenderContext', {
   value: FunctionalRenderContext
 });
 
-Vue.version = '2.5.20';
+Vue.version = '2.5.21';
 
 /*  */
 
@@ -9437,10 +9438,12 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADD
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {//  temporary stubs required for Vue.
-//  These will not be required as soon as the XD environment provides setTimeout/clearTimeout
+"use strict";
+/* WEBPACK VAR INJECTION */(function(global) {
+Object.defineProperty(exports, "__esModule", { value: true });
 global.setTimeout = (fn) => fn();
-global.clearTimeout = () => { };
+global.clearTimeout = () => {
+};
 // ES Modules 方式で読み込みたいが、
 // 上述の setTimeout の互換性のため
 // CommonJS 方式で読み込むしかない
@@ -9462,12 +9465,70 @@ function createDialog() {
     });
     return dialog;
 }
+/**
+ * 日本語から英語に変更する
+ * @param {string} n
+ * @returns {string}
+ */
+function convertJpToEn(jp) {
+    let name = jp;
+    name = name.split("アセット").join("asset");
+    name = name.split("シェイプ").join("shape");
+    name = name.split("シンボル").join("symbol");
+    name = name.split("レイヤー").join("layer");
+    name = name.split("グループ化").join("group");
+    name = name.split("グループ").join("group");
+    name = name.split("フォント").join("font");
+    name = name.split("グラフィック").join("graphic");
+    name = name.split("ビデオ").join("video");
+    name = name.split("フォルダー").join("folder");
+    name = name.split("トゥイーン").join("tween");
+    name = name.split("名称未設定").join("unknown");
+    name = name.split("長方形").join("rectangle");
+    name = name.split("楕円形").join("ellipse");
+    name = name.split("線").join("line");
+    name = name.split("リピートグリッド").join("repeat_grid");
+    name = name.split("アートボード").join("artboard");
+    name = name.split("パス").join("path");
+    name = name.split("画像").join("image");
+    name = name.split("　").join(" ").split(" ").join("_");
+    return name;
+}
+/**
+ * ノードの子の名前を変更する。
+ * @param {SceneNode} node
+ */
+function renameChildren(node) {
+    // console.log("node.children:" + node.children);
+    node.children.forEach((childNode, i) => {
+        // 孫の名前の変更は出来ないので、再帰はしない
+        // renameChildren(childNode);
+        // 名前を変更する
+        const name = convertJpToEn(childNode.name);
+        childNode.name = name;
+    });
+}
+/**
+ * 選択されているファイルをリネームする。
+ */
+function renameSelection(selection) {
+    selection.items.forEach((childNode, i) => {
+        // console.log("node :" + i, name);
+        // 現状、ルート以外で、以下の関数を実行するとエラーが表示される
+        // 「Plugin Error: Plugin made a change outside the current edit context
+        // https://adobexdplatform.com/plugin-docs/reference/core/edit-context.html
+        renameChildren(childNode);
+        // 選択しているノードの名前を変更する
+        const name = convertJpToEn(childNode.name);
+        childNode.name = name;
+    });
+}
 // メニューとして出力する
 module.exports = {
     commands: {
         // コマンドが押されたらこの関数を呼び出す
-        menuCommand: () => {
-            createDialog().showModal();
+        menuCommand: (selection) => {
+            renameSelection(selection);
         }
     }
 };
